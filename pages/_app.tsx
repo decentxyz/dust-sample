@@ -1,21 +1,23 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import {
+  connectorsForWallets,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
+import { configureChains, createConfig, mainnet, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import localFont from "next/font/local";
-import { MetaMaskConnector } from "@wagmi/core/connectors/metaMask";
 import { ChainProviderFn } from "@wagmi/core";
 
 // Default styles that can be overridden by your app
 import "@solana/wallet-adapter-react-ui/styles.css";
-
-import { BoxEvmChains } from "@decent.xyz/the-box";
 import "@decent.xyz/the-box/dist/the-box-base.css";
 import "@decent.xyz/the-box/dist/dark.css";
 import "@decent.xyz/the-box/dist/font.woff2.css";
+import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
+import { arbitrum, optimism, polygon } from "viem/chains";
 
 const getAlchemyProviders = (): ChainProviderFn[] => {
   const providers: ChainProviderFn[] = [];
@@ -33,17 +35,27 @@ const getAlchemyProviders = (): ChainProviderFn[] => {
   return providers;
 };
 
-const { chains, publicClient } = configureChains(BoxEvmChains, [
-  // @ts-ignore
-  ...getAlchemyProviders(),
+const { chains, publicClient } = configureChains(
+  [arbitrum, optimism, mainnet, polygon],
+  [
+    // @ts-ignore
+    ...getAlchemyProviders(),
 
-  // @ts-ignore
-  publicProvider(),
+    // @ts-ignore
+    publicProvider(),
+  ],
+);
+const projectId = process.env["PROJECT_ID"] || "our-id";
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [metaMaskWallet({ projectId, chains })],
+  },
 ]);
 
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [new MetaMaskConnector({ chains })],
+  connectors,
   publicClient,
 });
 

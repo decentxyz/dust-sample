@@ -86,19 +86,24 @@ import "@decent.xyz/the-box/dist/font.woff2.css";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { BoxEvmChains } from "@decent.xyz/the-box";
 import { publicProvider } from "wagmi/providers/public";
-import { MetaMaskConnector } from "@wagmi/core/connectors/metaMask";
+import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
 
 const { chains, publicClient } = configureChains(BoxEvmChains, [
   // you can add your own providers here too.
   publicProvider(),
 ]);
 
+const projectId = process.env["PROJECT_ID"] || "our-id";
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [metaMaskWallet({ projectId, chains })],
+  },
+]);
+
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-    // other connectors...
-  ],
+  connectors,
   publicClient,
 });
 
