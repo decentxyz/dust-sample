@@ -13,7 +13,6 @@ export default function BoxSplashPage() {
           <DustSwapBox
             className="rounded-lg"
             apiKey={process.env.NEXT_PUBLIC_DECENT_API_KEY as string}
-            imgSrc="/dust-icon.jpg"
             footerSlot={
               <div className="text-gray-400 text-sm p-4">
                 powered by{" "}

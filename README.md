@@ -1,38 +1,176 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Decent The Box - Dust Version
 
-## Getting Started
+This repository contains a working example of **The Box**.
 
-First, run the development server:
+## Getting Started With This Repository
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+### Clone this repository:
+
+```
+git clone https://github.com/decentxyz/dust-sample
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install dependencies
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+cd dust-sample
+npm i
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Set the appropriate environment variablesA
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Create a `.env.local` file with the corresponding env variables. To get this repo
+to work, you need:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. An API key from us.
+2. An RPC for Solana, we recommend [quicknode's API's](https://www.quicknode.com/).
 
-## Learn More
+```
+NEXT_PUBLIC_DECENT_API_KEY=<your-api-key>
+NEXT_PUBLIC_RPC_SOLANA_MAINNET=<rpc-solana-mainnet>
+```
 
-To learn more about Next.js, take a look at the following resources:
+For the EVM rpc's this repository by default makes use of public RPC's. However, you
+can provide your own RPC's in case that the public ones get rate-limited. You can
+pass those in as environment variables. Refer to [this file](.env.example) for all
+possible options for env vars.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Run Development Server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+The rest is just good ol' NextJS stuff. Just run
 
-## Deploy on Vercel
+```
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+And you should be able to see the application at `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Using The Box in your Own Codebase
+
+### Installing The-Box from the tarfile
+
+To install from the tarfile, you can simply do `npm i /path/to/tarfile.tgz`. The
+tarfile for the custom package is located in this repository at
+[here](decent.xyz-the-box-1.0.1.tgz).
+
+```
+npm i path/to/decent.xyz-the-box-1.0.1.tgz
+```
+
+After that you should be able to see our package in your `package.json` file.
+This repository's `package.json` file already includes **The Box** as a dependency.
+You can see it at [this line](package.json#L13):
+
+```
+  "dependencies": {
+    //
+    "@decent.xyz/the-box": "file:decent.xyz-the-box-1.0.1.tgz",
+    //
+  }
+```
+
+### Importing The Box's CSS styles
+
+Add these imports to your `_app.tsx` file.
+
+```
+import "@decent.xyz/the-box/dist/the-box-base.css";
+import "@decent.xyz/the-box/dist/dark.css";
+import "@decent.xyz/the-box/dist/font.woff2.css";
+```
+
+### Setting up Wagmi
+
+```
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { BoxEvmChains } from "@decent.xyz/the-box";
+import { publicProvider } from "wagmi/providers/public";
+import { MetaMaskConnector } from "@wagmi/core/connectors/metaMask";
+
+const { chains, publicClient } = configureChains(BoxEvmChains, [
+  // you can add your own providers here too.
+  publicProvider(),
+]);
+
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({ chains }),
+    // other connectors...
+  ],
+  publicClient,
+});
+
+```
+
+Then wrap your app in Wagmi's provider.
+
+```
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <WagmiConfig config={wagmiConfig}>
+      <Component {...pageProps} />
+    </WagmiConfig>
+  );
+}
+```
+
+## Setting up Solana Wallet SDK
+
+Process is very similar to setting up Wagmi.
+
+```
+import { PropsWithChildren, useMemo } from "react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+import {
+  ConnectionProvider,
+  WalletProvider,
+} from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
+export default function App({ Component, pageProps }: AppProps) {
+  const network = WalletAdapterNetwork.Mainnet;
+
+  const wallets = useMemo(
+    () => [new PhantomWalletAdapter()],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [network],
+  );
+
+  return (
+    <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_RPC_SOLANA_MAINNET!}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
+}
+```
+
+Then after that you can make use of our box anywhere in your app.
+
+```
+import { BoxThemeProvider, darkTheme, DustSwapBox } from "@decent.xyz/the-box";
+
+export const SomeComponentInYourApp = () => {
+  return (
+    <BoxThemeProvider theme={darkTheme}>
+      <DustSwapBox
+        className="rounded-lg"
+        apiKey={process.env.NEXT_PUBLIC_DECENT_API_KEY as string}
+        footerSlot={
+          <div className="text-gray-400 text-sm p-4">
+            powered by{" "}
+            <img
+              src="/logo-with-text-white.png"
+              alt="Decent"
+              className="inline h-4"
+            />
+          </div>
+        }
+      />
+    </BoxThemeProvider>
+  );
+}
+```
