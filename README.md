@@ -1,6 +1,7 @@
 # Decent The Box - Dust Version
 
-This repository contains a working example of **The Box**.
+This repository contains a working example of **The Box**. You can see the
+[deployed version here](https://dust-sample.vercel.app/).
 
 ## Getting Started With This Repository
 
@@ -141,14 +142,46 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_RPC_SOLANA_MAINNET!}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+          <Component {...pageProps} />
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
 }
 ```
 
-Then after that you can make use of our box anywhere in your app.
+## Using Wagmi & Solana Wallet SDK together
+
+You can just wrap your application in both of the providers from each library, and
+have it at your `_app.tsx` file.
+
+```
+// imports
+
+// setup code
+
+export default function App({ Component, pageProps }: AppProps) {
+
+  // setup code
+
+  return (
+    <ConnectionProvider endpoint={process.env.NEXT_PUBLIC_RPC_SOLANA_MAINNET!}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <WagmiConfig config={wagmiConfig}>
+            <Component {...pageProps} />
+          </WagmiConfig>
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
+}
+```
+
+## Using The Box
+
+After that you can make use of our box anywhere in your app.
 
 ```
 import { BoxThemeProvider, darkTheme, DustSwapBox } from "@decent.xyz/the-box";
