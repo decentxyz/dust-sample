@@ -52,10 +52,10 @@ And you should be able to see the application at `http://localhost:3000`.
 
 To install from the tarfile, you can simply do `npm i /path/to/tarfile.tgz`. The
 tarfile for the custom package is located in this repository at
-[here](decent.xyz-the-box-1.0.2.tgz).
+[here](decent.xyz-the-box-1.0.3.tgz).
 
 ```
-npm i path/to/decent.xyz-the-box-1.0.2.tgz
+npm i path/to/decent.xyz-the-box-1.0.3.tgz
 ```
 
 After that you should be able to see our package in your `package.json` file.
@@ -65,7 +65,7 @@ You can see it at [this line](package.json#L13):
 ```
   "dependencies": {
     //
-    "@decent.xyz/the-box": "file:decent.xyz-the-box-1.0.2.tgz",
+    "@decent.xyz/the-box": "file:decent.xyz-the-box-1.0.3.tgz",
     //
   }
 ```

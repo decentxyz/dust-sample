@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@certusone/wormhole-sdk": "^0.9.22",
-    "@decent.xyz/the-box": "file:decent.xyz-the-box-1.0.2.tgz",
+    "@decent.xyz/the-box": "file:decent.xyz-the-box-1.0.3.tgz",
     "@rainbow-me/rainbowkit": "^1.0.4",
     "@solana/spl-token": "^0.3.8",
     "@solana/wallet-adapter-base": "^0.9.22",

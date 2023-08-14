@@ -5,7 +5,7 @@ import {
   connectorsForWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, mainnet, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import localFont from "next/font/local";
@@ -17,7 +17,7 @@ import "@decent.xyz/the-box/dist/the-box-base.css";
 import "@decent.xyz/the-box/dist/dark.css";
 import "@decent.xyz/the-box/dist/font.woff2.css";
 import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
-import { arbitrum, optimism, polygon } from "viem/chains";
+import { arbitrum, optimism, polygon, mainnet } from "viem/chains";
 
 const getAlchemyProviders = (): ChainProviderFn[] => {
   const providers: ChainProviderFn[] = [];
